@@ -9,9 +9,9 @@ object Common {
   lazy val Settings = Seq(
     name                  := "streams-custom-session",
     organization          := "com.wardziniak",
-    version               := "0.11",
+    version               := Versions.StreamsCustomSession,
     organizationName      := "com.wardziniak",
-    scalaVersion          := "2.12.4",
+    scalaVersion          := Versions.Scala,
     organizationHomepage  := Some(url("http://wardziniak.com")),
     scmInfo               := Some(ScmInfo(url("https://github.com/wardziniak/streams-custom-session"), "scm:git@github.com:wardziniak/streams-custom-session.git")),
     developers            := List(
@@ -31,6 +31,7 @@ object Common {
       if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
       else Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
-    publishMavenStyle     := true
+    publishMavenStyle     := true,
+    libraryDependencies   ++= Dependencies.StreamsCustomSessionDep
   )
 }
