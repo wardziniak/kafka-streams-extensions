@@ -1,5 +1,7 @@
 # kafka-streams-extensions
 
+[![Build Status](https://travis-ci.com/wardziniak/kafka-streams-extensions.svg?branch=master)](https://travis-ci.com/wardziniak/kafka-streams-extensions)
+
 Lightweight library, that adds to Kafka Streams DSL option to define Custom Session
 
 Sample usage:
