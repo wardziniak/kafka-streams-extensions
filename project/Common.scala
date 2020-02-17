@@ -3,8 +3,11 @@ import sbt.{Developer, ScmInfo, URL, url}
 import sbt.librarymanagement.DependencyBuilders
 import sbt.Keys._
 import sbt._
+import com.typesafe.sbt.SbtPgp
 
 object Common {
+
+  def isTravis = System.getenv("TRAVIS") == "true"
 
   lazy val Settings = Seq(
     name                  := "streams-custom-session",
@@ -32,6 +35,17 @@ object Common {
       else Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
     publishMavenStyle     := true,
+    SbtPgp.autoImport.useGpgAgent := true,
+    if (isTravis) {
+      credentials += Credentials(
+        "Sonatype Nexus Repository Manager",
+        "oss.sonatype.org",
+        sys.env.getOrElse("OSSRH_USERNAME", ""),
+        sys.env.getOrElse("OSSRH_PASSWORD", "")
+      )
+    } else {
+      credentials += Credentials(Path.userHome / ".sbt" / "credentials.sbt")
+    },
     libraryDependencies   ++= Dependencies.StreamsCustomSessionDep
   )
 }
