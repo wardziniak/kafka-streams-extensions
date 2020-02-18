@@ -4,6 +4,8 @@ import sbt.librarymanagement.DependencyBuilders
 import sbt.Keys._
 import sbt._
 import com.typesafe.sbt.SbtPgp
+import com.typesafe.sbt.pgp.PgpKeys
+import sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction
 
 object Common {
 
@@ -12,7 +14,7 @@ object Common {
   lazy val Settings = Seq(
     name                  := "streams-custom-session",
     organization          := "com.wardziniak",
-    version               := Versions.StreamsCustomSession,
+    version               := Versions.StreamsCustomSession.value,
     organizationName      := "com.wardziniak",
     scalaVersion          := Versions.Scala,
     organizationHomepage  := Some(url("http://wardziniak.com")),
@@ -46,6 +48,7 @@ object Common {
     } else {
       credentials += Credentials(Path.userHome / ".sbt" / "credentials.sbt")
     },
-    libraryDependencies   ++= Dependencies.StreamsCustomSessionDep
+    libraryDependencies   ++= Dependencies.StreamsCustomSessionDep,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value
   )
 }
