@@ -2,8 +2,8 @@ package com.wardziniak.kafka.streams.session
 
 import java.util.Properties
 
-import org.apache.kafka.streams.scala.kstream.KStream
-import org.apache.kafka.streams.scala.{Serdes, StreamsBuilder}
+import org.apache.kafka.streams.scala.kstream.{KStream, Materialized}
+import org.apache.kafka.streams.scala.{ByteArrayKeyValueStore, Serdes, StreamsBuilder}
 import org.apache.kafka.streams.{StreamsConfig, TestInputTopic, TestOutputTopic, TopologyTestDriver}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -20,22 +20,25 @@ class ExtendedKStreamSpec extends WordSpec with Matchers {
       import org.apache.kafka.streams.scala.Serdes.String
 
       implicit val builder: StreamsBuilder = new StreamsBuilder()
-      val output = builder.stream[String, String](InputTopic).aggregate[String](() => "", (_, value, agg) => s"${agg}_$value", (_, _, agg) => agg.length > 10, Serdes.String, Serdes.String)
+      implicit val mat: Materialized[String, String, ByteArrayKeyValueStore] = Materialized.as[String, String, ByteArrayKeyValueStore]("someStore")
+      val output = builder.stream[String, String](InputTopic).aggregate[String](() => "", (_, value, agg) => s"${agg}_$value", (_, _, agg) => agg.length > 10)
       assert(output.isInstanceOf[KStream[String, String]], "Result of aggregation should be instance of KStream[String, String]")
     }
 
     "make aggregation with Custom Session" in {
-
       implicit val builder: StreamsBuilder = new StreamsBuilder()
       val props = new Properties()
-      props.put(StreamsConfig.APPLICATION_ID_CONFIG, "ExtendedKStreamSpec")
+      props.put(StreamsConfig.APPLICATION_ID_CONFIG, "ExtendedKStreamSpec3")
       props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234")
 
       import com.wardziniak.kafka.streams.session.ExtendedKStream._
       import org.apache.kafka.streams.scala.ImplicitConversions.consumedFromSerde
       import org.apache.kafka.streams.scala.Serdes.String
 
-      val output: KStream[String, String] = builder.stream[String, String](InputTopic).aggregate[String](() => "", (_, value, agg) => s"${agg}_$value", (_, _, agg) => agg.length > 10, Serdes.String, Serdes.String)
+      implicit val mat: Materialized[String, String, ByteArrayKeyValueStore] = Materialized.as[String, String, ByteArrayKeyValueStore]("someStore")
+
+
+      val output: KStream[String, String] = builder.stream[String, String](InputTopic).aggregate[String](() => "", (_, value, agg) => s"${agg}_$value", (_, _, agg) => agg.length > 10)
       import org.apache.kafka.streams.scala.ImplicitConversions.producedFromSerde
       output.to(OutputTopic)
 
