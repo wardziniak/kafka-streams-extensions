@@ -1,6 +1,9 @@
+import sbt.Keys.version
+import sbt.{SettingKey, ThisBuild}
+
 object Versions {
 
-  val StreamsCustomSession = "0.20.3-SNAPSHOT"
+  val StreamsCustomSession: SettingKey[String] = version in ThisBuild
   val Scala = "2.12.4"
 
   val Kafka = "2.4.0"
